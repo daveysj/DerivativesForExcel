@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Maths">
+      <UniqueIdentifier>{e00f281c-caac-4c24-87ce-14fc5cfce985}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Maths\maths.cpp">
+      <Filter>Maths</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Maths\TwoDimensionalInterpolation.cpp">
+      <Filter>Maths</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Maths\maths.h">
+      <Filter>Maths</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Maths\TwoDimensionalInterpolation.h">
+      <Filter>Maths</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

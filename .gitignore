@@ -1,3 +1,9 @@
+# Visual Studio
+*.suo
+*.db
+*.opendb
+
+
 # Compiled Object files
 *.slo
 *.lo
