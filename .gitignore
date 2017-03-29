@@ -2,6 +2,10 @@
 *.suo
 *.db
 *.opendb
+*.tlog
+*.lastbuildstate
+*.idb
+*'log
 
 
 # Compiled Object files
