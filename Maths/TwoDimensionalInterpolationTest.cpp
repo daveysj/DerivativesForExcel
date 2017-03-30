@@ -12,7 +12,7 @@ using namespace boost::assign; // used to initialize vector
 void Maths2DInterpTest::testBilinearInterpolator()
 {
     BOOST_TEST_MESSAGE("Testing BilinearInterpolation class ...");
-    /*
+
     vector<double> time;
     time += 1, 2, 3, 6, 12, 24;
 
@@ -29,40 +29,44 @@ void Maths2DInterpTest::testBilinearInterpolator()
     vector<vector<double>> volatility;
     volatility += v1, v2, v3, v4, v5;
 
-    QuantLib::Matrix M = QuantLib::Matrix(time.size(), delta.size());
-    for (size_t i = 0; i < delta.size(); ++i) {
-        for (size_t j = 0; j < time.size(); ++j) {
-            M[i][j] = volatility[i][j];
-        }
+    BilinearInterpolator interpolator(time, delta, volatility, false);
+    BOOST_REQUIRE(interpolator.isOk());
+    BOOST_CHECK(interpolator.isInRange(1.5, 75));
+    BOOST_CHECK(!interpolator.isInRange(0.5, 75));
+    BOOST_CHECK(!interpolator.isInRange(36.5, 75));
+    BOOST_CHECK(!interpolator.isInRange(1.5, 5));
+    BOOST_CHECK(!interpolator.isInRange(1.5, 95));
+
+    BOOST_CHECK(interpolator.locateX(0) == 0);
+    BOOST_CHECK(interpolator.locateX(1.1) == 0);
+    BOOST_CHECK(interpolator.locateX(2.1) == 1);
+    BOOST_CHECK(interpolator.locateX(36) == 4);
+
+    BOOST_CHECK(interpolator.locateY(0) == 0);
+    BOOST_CHECK(interpolator.locateY(12) == 0);
+    BOOST_CHECK(interpolator.locateY(26) == 1);
+    BOOST_CHECK(interpolator.locateY(100) == 3);
+
+    vector<LinearArrayInterpolator> lVector;
+    lVector.push_back(LinearArrayInterpolator(time, v1, true));
+    lVector.push_back(LinearArrayInterpolator(time, v2, true));
+    lVector.push_back(LinearArrayInterpolator(time, v3, true));
+    lVector.push_back(LinearArrayInterpolator(time, v4, true));
+    lVector.push_back(LinearArrayInterpolator(time, v5, true));
+
+    double xPoint = 9;
+    double yPoint = 33;
+    vector<double> lPoints = vector<double>(lVector.size());
+    for (size_t i = 0; i < lVector.size(); ++i)
+    {
+        lPoints[i] = lVector[i].getRate(yPoint);
     }
 
-    BilinearInterpolator interpolator(time, delta, M, false);
-    BOOST_REQUIRE(interpolator.isOk());
-   BOOST_CHECK(interpolator.isInRange(1.5, 75));
-   BOOST_CHECK(!interpolator.isInRange(0.5, 75));
-   BOOST_CHECK(!interpolator.isInRange(36.5, 75));
-   BOOST_CHECK(!interpolator.isInRange(1.5, 5));
-   BOOST_CHECK(!interpolator.isInRange(1.5, 95));
+    LinearArrayInterpolator finalInterpolator = LinearArrayInterpolator(delta, lPoints, true);
 
-   BOOST_CHECK(interpolator.locateX(0) == 0);
-   BOOST_CHECK(interpolator.locateX(1.1) == 0);
-   BOOST_CHECK(interpolator.locateX(2.1) == 1);
-   BOOST_CHECK(interpolator.locateX(36) == 4);
+    BOOST_CHECK(abs(interpolator.getRate(xPoint, yPoint) - finalInterpolator.getRate(xPoint)) < 1e-12);
+    BOOST_CHECK(boost::math::isnan<double>(interpolator.getRate(9, 95)));
 
-   BOOST_CHECK(interpolator.locateY(0) == 0);
-   BOOST_CHECK(interpolator.locateY(12) == 0);
-   BOOST_CHECK(interpolator.locateY(26) == 1);
-   BOOST_CHECK(interpolator.locateY(100) == 3);
-
-    QuantLib::BilinearInterpolation qlInterp = QuantLib::BilinearInterpolation(time.begin(), time.end(), delta.begin(), delta.end(), M);
-    double me = interpolator.getRate(6, 50);
-    double ql = qlInterp(6, 50);
-   BOOST_CHECK(interpolator.getRate(6, 50) == qlInterp(6, 50));
-   BOOST_CHECK(interpolator.getRate(1, 10) == qlInterp(1, 10));
-   BOOST_CHECK(interpolator.getRate(24, 90) == qlInterp(24, 90));
-   BOOST_CHECK(interpolator.getRate(9, 33) == qlInterp(9, 33));
-   BOOST_CHECK(boost::math::isnan<double>(interpolator.getRate(9, 95)));
-   */
 
 }
 

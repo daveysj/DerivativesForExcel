@@ -1,6 +1,6 @@
 #include "TwoDimensionalInterpolation.h"
 
-//using namespace QuantLib;
+using namespace boost::algorithm;
 
 namespace XLLBasicLibrary
 {
@@ -8,7 +8,7 @@ namespace XLLBasicLibrary
     /*======================================================================================
     TwoDimensionalInterpolator
     
-    ======================================================================================*
+    ======================================================================================*/
     TwoDimensionalInterpolator::TwoDimensionalInterpolator(
         vector<double> xVector,
         vector<double> yVector,
@@ -17,6 +17,10 @@ namespace XLLBasicLibrary
         x(xVector), y(yVector), z(zMatrix), allowExtrapolation(extrapolate)
     {
         className = "TwoDimensionalInterpolation";
+        if (!isOk())
+        {
+            throw runtime_error(errorMessage);
+        }
     }
 
 
@@ -38,12 +42,12 @@ namespace XLLBasicLibrary
                 return false;
             }
         }
-        if (!isStrictlyIncreasing(x)) 
+        if (!is_strictly_increasing(x.begin(), x.end()))
         {
             errorMessage = className + ": X inputs not structly increasing";
             return false;
         }
-        if (!isStrictlyIncreasing(y)) 
+        if (!is_strictly_increasing(y.begin(), y.end()))
         {
             errorMessage = className + ": Y inputs not structly increasing";
             return false;
@@ -100,14 +104,26 @@ namespace XLLBasicLibrary
     }
 
 
-   /*======================================================================================
-   BilinearInterpolator
+    /*======================================================================================
+    BilinearInterpolator
     
-   ======================================================================================*
+    ======================================================================================*/
+    BilinearInterpolator::BilinearInterpolator(
+        vector<double> xVector, 
+        vector<double> yVector, 
+        vector<vector<double> > zMatrix,
+        bool extrapolate) :
+        TwoDimensionalInterpolator(xVector, yVector, zMatrix, extrapolate)
+    {
+        className = "BilinearInterpolator";
+    };
+
     double BilinearInterpolator::getRate(double xInput, double yInput) const
     {
         if (!isInRange(xInput, yInput))
+        {
             return numeric_limits<double>::quiet_NaN();
+        }
 
         size_t i = locateX(xInput);
         double x1 = x[i], x2 = x[i + 1];
@@ -128,37 +144,45 @@ namespace XLLBasicLibrary
    /*======================================================================================
    BicubicInterpolator
     
-   ======================================================================================*
-    BicubicInterpolator::BicubicInterpolator(vector<double> xVector, vector<double> yVector, Matrix zMatrix, bool extrapolate) : 
+   ======================================================================================*/
+    BicubicInterpolator::BicubicInterpolator(
+        vector<double> xVector, 
+        vector<double> yVector, 
+        vector<vector<double> > zMatrix, 
+        bool extrapolate) :
         TwoDimensionalInterpolator(xVector, yVector, zMatrix, extrapolate) 
     {
-        if (!isOk()) 
-            return;
-        for (size_t i = 0; i < yVector.size(); ++i) {
-            splines.push_back(CubicInterpolation(
-                                x.begin(), x.end(),
-                                this->z.row_begin(i),
-                                CubicInterpolation::Spline, false,
-                                CubicInterpolation::SecondDerivative, 0.0,
-                                CubicInterpolation::SecondDerivative, 0.0));
+        className = "BicubicInterpolator";
+
+        for (size_t i = 0; i < y.size(); ++i) 
+        {
+            vector<double> z_i = z[i];
+            splines.push_back(CubicSplineInterpolator(xVector, z_i, 0, 0, false));
+
+            //splines.push_back(CubicInterpolation(
+            //    x.begin(), x.end(),
+            //    this->z.row_begin(i),
+            //    CubicInterpolation::Spline, false,
+            //    CubicInterpolation::SecondDerivative, 0.0,
+            //    CubicInterpolation::SecondDerivative, 0.0));
         }
     };
 
     double BicubicInterpolator::getRate(double xInput, double yInput) const
     {
         if (!isInRange(xInput, yInput))
+        {
             return numeric_limits<double>::quiet_NaN();
+        }
 
         std::vector<double> section(splines.size());
-        for (Size i=0; i<splines.size(); i++)
-            section[i]=splines[i](xInput,allowExtrapolation);
+        for (size_t i = 0; i < splines.size(); i++)
+        {
+            section[i] = splines[i].getRate(xInput);
+        }
 
-        CubicInterpolation spline(y.begin(), y.end(),
-                                    section.begin(),
-                                    CubicInterpolation::Spline, false,
-                                    CubicInterpolation::SecondDerivative, 0.0,
-                                    CubicInterpolation::SecondDerivative, 0.0);
-        return spline(yInput,true);
+        CubicSplineInterpolator spline = CubicSplineInterpolator(y, section, 0, 0, true);
+
+        return spline.getRate(yInput);
     }
-    */
 }

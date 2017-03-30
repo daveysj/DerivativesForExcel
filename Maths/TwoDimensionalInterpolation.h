@@ -12,10 +12,13 @@ namespace XLLBasicLibrary
    TwoDimensionalInterpolation
     
     Abstract Base Class for 2 dimensional interpolation
-   ======================================================================================*
+   ======================================================================================*/
     class TwoDimensionalInterpolator
     {
     public:
+        // Throws a runtime error if the inputs are not correct, i.e. if 
+        //  - xVector and yVector are not strictly increasing
+        //  - dimensions of zMatrix are not consistent
         TwoDimensionalInterpolator(
             vector<double> xVector,
             vector<double> yVector,
@@ -37,8 +40,6 @@ namespace XLLBasicLibrary
         virtual double getRate(double x, double y) const = 0;
 
         // given a point (xInput, yInput) we use the following methods to find the "boundary" 
-        // (locateX(xInput), locateY(yInput)+1)       (locateX(xInput)+1, locateY(yInput)+1)       
-        // (locateX(xInput), locateY(yInput))         (locateX(xInput)+1, locateY(yInput))       
         size_t locateX(double xInput) const;
         size_t locateY(double yInput) const;
 
@@ -62,12 +63,15 @@ namespace XLLBasicLibrary
    /*======================================================================================
    BilinearInterpolator
     
-   ======================================================================================*
+   ======================================================================================*/
     class BilinearInterpolator : public TwoDimensionalInterpolator 
     {
     public:
-        BilinearInterpolator(vector<double> xVector, vector<double> yVector, QuantLib::Matrix zMatrix, bool extrapolate) : 
-          TwoDimensionalInterpolator(xVector, yVector, zMatrix, extrapolate) {};
+        BilinearInterpolator(
+            vector<double> xVector, 
+            vector<double> yVector, 
+            vector<vector<double> > zMatrix, 
+            bool extrapolate);
 
         ~BilinearInterpolator() {};
 
@@ -78,23 +82,26 @@ namespace XLLBasicLibrary
    /*======================================================================================
    BicubicInterpolator
     
-   ======================================================================================*
+   ======================================================================================*/
     class BicubicInterpolator : public TwoDimensionalInterpolator 
     {
     public:
-        BicubicInterpolator(vector<double> xVector, vector<double> yVector, QuantLib::Matrix zMatrix, bool extrapolate);
+        BicubicInterpolator(
+            vector<double> xVector, 
+            vector<double> yVector, 
+            vector<vector<double> > zMatrix, 
+            bool extrapolate);
 
         ~BicubicInterpolator() {};
 
         virtual double getRate(double x, double y) const;
 
     protected:
-        //vector<CubicSplineInterpolator> splines;
-        vector<QuantLib::Interpolation> splines;
+        vector<CubicSplineInterpolator> splines;
+        //vector<QuantLib::Interpolation> splines;
 
 
     };
-    */
 }
 
 #endif
