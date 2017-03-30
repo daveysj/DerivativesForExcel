@@ -10,90 +10,22 @@
 */
 
 #include <vector>
+#include <boost\algorithm\cxx11\is_sorted.hpp>
 
 using namespace std;
 
 namespace XLLBasicLibrary 
 {
+    /*======================================================================================
+    Interpolator
 
-    template <typename T>
-    bool isStrictlyIncreasing(std::vector<T> data) 
+    Abstract base class implemented by all Interpolators
+    =======================================================================================*/
+    class Interpolator
     {
-        bool strictlyIncreasing = true;
-        size_t arrayLength = data.size();
-        if (arrayLength < 1)
-        {
-            return false;
-        }
-        else if (arrayLength == 1)
-        {
-            return true;
-        }
-        for (size_t i = 0; (i < arrayLength - 1) && strictlyIncreasing; ++i) 
-        {
-            if (data[i] >= data[i+1])
-            {
-                strictlyIncreasing = false;
-            }
-      }
-      return strictlyIncreasing;
-   }
-
-   template <typename T>
-   bool isStrictlyDecreasing(std::vector<T> data)
-   {
-      bool strictlyDecreasing = true;
-      size_t arrayLength = data.size();
-      if (arrayLength < 1)
-        {
-            return false;
-        }
-        else if (arrayLength == 1)
-        {
-            return true;
-        }
-      for (size_t i = 0; (i < arrayLength - 1) && strictlyDecreasing; ++i) 
-        {
-         if (data[i] <= data[i+1])
-            {
-            strictlyDecreasing = false;
-            }
-      }
-      return strictlyDecreasing;
-   }
-
-   template <typename T>
-   bool isStrictlyMonotonic(std::vector<T> data) 
-    {
-        if (data.size() <= 1)
-        {
-            return false;
-        }
-        if (data[0] < data[1])      // increasing
-        {
-            return isStrictlyIncreasing(data);
-        }
-        else if (data[0] > data[1]) // decreasing
-        {
-            return isStrictlyDecreasing(data);
-        }
-        else                  // array[0] = array[1] 
-        {
-            return false;
-        }
-   }
-
-
-   /*======================================================================================
-   Interpolator
-
-   Abstract base class implemented by all Interpolators
-   =======================================================================================*/
-   class Interpolator
-   {
-   public:
-      virtual double getRate(double x) const = 0;
-   };
+    public:
+        virtual double getRate(double x) const = 0;
+    };
 
     /*======================================================================================
     TwoPointInterpolator

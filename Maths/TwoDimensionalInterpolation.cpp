@@ -2,35 +2,63 @@
 
 //using namespace QuantLib;
 
-namespace sjd {
+namespace XLLBasicLibrary
+{
 
-   /*======================================================================================
-   TwoDimensionalInterpolator
+    /*======================================================================================
+    TwoDimensionalInterpolator
     
-   ======================================================================================*
-    bool TwoDimensionalInterpolator::isOk() {
-        if ((x.size() < 2) || (y.size() < 2) || (z.rows() < 2) || (z.columns() < 2)) 
+    ======================================================================================*
+    TwoDimensionalInterpolator::TwoDimensionalInterpolator(
+        vector<double> xVector,
+        vector<double> yVector,
+        vector<vector<double> > zMatrix,
+        bool extrapolate) :
+        x(xVector), y(yVector), z(zMatrix), allowExtrapolation(extrapolate)
+    {
+        className = "TwoDimensionalInterpolation";
+    }
+
+
+    bool TwoDimensionalInterpolator::isOk() 
+    {
+        size_t zRows = z.size();
+        size_t zColumns = z[0].size();
+
+        if ((x.size() < 2) || (y.size() < 2) || (zRows < 2) || (zColumns < 2))
         {
-            errorMessage = "TwoDimensionalInterpolation->The input x, y or z data does not have sufficient data";
+            errorMessage = className + ": The input x, y or z data does not have sufficient data";
             return false;
         }
-        if (!isStrictlyIncreasing(x)) {
-            errorMessage = "TwoDimensionalInterpolation->X inputs not structly increasing";
+        for (size_t i = 1; i < zRows; ++i)
+        {
+            if (z[i].size() != zColumns)
+            {
+                errorMessage = className + ": Columns do not have consistent dimension";
+                return false;
+            }
+        }
+        if (!isStrictlyIncreasing(x)) 
+        {
+            errorMessage = className + ": X inputs not structly increasing";
             return false;
         }
-        if (!isStrictlyIncreasing(y)) {
-            errorMessage = "TwoDimensionalInterpolation->Y inputs not structly increasing";
+        if (!isStrictlyIncreasing(y)) 
+        {
+            errorMessage = className + ": Y inputs not structly increasing";
             return false;
         }
-        if (y.size() != z.columns()) {
-            errorMessage = "TwoDimensionalInterpolation->Y vector has inconsistent dimension with z data";
+        if (y.size() != zColumns) 
+        {
+            errorMessage = className + ": Y vector has inconsistent dimension with z data";
             return false;
         }
-        if (x.size() != z.rows()) {
-            errorMessage = "TwoDimensionalInterpolation->X vector has inconsistent dimension with z data";
+        if (x.size() != zRows) 
+        {
+            errorMessage = className + ": X vector has inconsistent dimension with z data";
             return false;
         }
-        errorMessage = "TwoDimensionalInterpolation->No Error";
+        errorMessage = className + ": No Error";
         return true;
     }
 

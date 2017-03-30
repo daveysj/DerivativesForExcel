@@ -9,41 +9,6 @@ using namespace XLLBasicLibrary;
 using namespace boost::assign; // used to initialize vector
 
 
-void MathsFunctionsTest::testFunctions() 
-{
-    BOOST_TEST_MESSAGE("Testing Maths Functions...");
-    vector<double> increasingVector, strictlyIncreasingVector, mixedVector, emptyVector;
-    vector<size_t> decreasingVector, strictlyDecreasingVector, constantVector;
-    decreasingVector.push_back(10);
-    for (size_t z = 0; z < 10; ++ z) {
-        increasingVector.push_back((double) z);
-        strictlyIncreasingVector.push_back((double) z);
-        decreasingVector.push_back(10-z);
-        strictlyDecreasingVector.push_back(10-z);
-    }
-    increasingVector.push_back(9);
-    mixedVector = increasingVector;
-    for (size_t i = 0; i < decreasingVector.size(); ++ i) {
-        mixedVector.push_back(decreasingVector[i]);
-        constantVector.push_back(10);
-    }
-
-    BOOST_CHECK(isStrictlyIncreasing(strictlyIncreasingVector) == true);
-    BOOST_CHECK(isStrictlyIncreasing(increasingVector) == false);
-    BOOST_CHECK(isStrictlyIncreasing(constantVector) == false);
-    BOOST_CHECK(isStrictlyIncreasing(emptyVector) == false);
-
-    BOOST_CHECK(isStrictlyDecreasing(strictlyDecreasingVector) == true);
-    BOOST_CHECK(isStrictlyDecreasing(decreasingVector) == false);
-    BOOST_CHECK(isStrictlyDecreasing(constantVector) == false);
-    BOOST_CHECK(isStrictlyDecreasing(emptyVector) == false);
-
-    BOOST_CHECK(isStrictlyMonotonic(strictlyIncreasingVector) == true);
-    BOOST_CHECK(isStrictlyMonotonic(strictlyDecreasingVector) == true);
-    BOOST_CHECK(isStrictlyMonotonic(decreasingVector) == false);
-    BOOST_CHECK(isStrictlyMonotonic(constantVector) == false);
-    BOOST_CHECK(isStrictlyMonotonic(emptyVector) == false);
-}
 
 void MathsFunctionsTest::testLinearInterpolator() 
 {
@@ -186,7 +151,6 @@ void MathsFunctionsTest::testCubicSplineInterpolator()
 test_suite* MathsFunctionsTest::suite() 
 {
     test_suite* suite = BOOST_TEST_SUITE("Maths Functions Tests");
-    suite->add(BOOST_TEST_CASE(&MathsFunctionsTest::testFunctions));
     suite->add(BOOST_TEST_CASE(&MathsFunctionsTest::testLinearInterpolator));
     suite->add(BOOST_TEST_CASE(&MathsFunctionsTest::testArrayInterpolator));   
     suite->add(BOOST_TEST_CASE(&MathsFunctionsTest::testLinearArrayInterpolator));

@@ -1,8 +1,7 @@
 #include "maths.h"
 
-//======================================================================================
-// MathsFunctions
-//======================================================================================
+using namespace boost::algorithm;
+
 namespace XLLBasicLibrary 
 {
 
@@ -74,7 +73,7 @@ namespace XLLBasicLibrary
 
     bool ArrayInterpolator::isOk()
     {
-        if (!isStrictlyIncreasing(xVector)) 
+        if (!is_strictly_increasing(xVector.begin(), xVector.end()))
         {
             setOnError("ArrayInterpolator::ArrayInterpolator. X vector input not strictly monotonic");
             return false;
@@ -97,7 +96,7 @@ namespace XLLBasicLibrary
     void ArrayInterpolator::setXVector(vector<double> xVectorInput) 
     {
         xVector = xVectorInput;
-        if (!isStrictlyIncreasing(xVector)) 
+        if (!is_strictly_increasing(xVector.begin(), xVector.end()))
         {
             setOnError("ArrayInterpolator::setXVector. X vector input not strictly monotonic");
         }

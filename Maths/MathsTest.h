@@ -9,7 +9,6 @@
 class MathsFunctionsTest 
 {
 public:
-    static void testFunctions();
     static void testLinearInterpolator();
     // Test some of the functionality of the abstract base class using one instance
     static void testArrayInterpolator();
