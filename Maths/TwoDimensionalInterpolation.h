@@ -11,7 +11,23 @@ namespace XLLBasicLibrary
    /*======================================================================================
    TwoDimensionalInterpolation
     
-    Abstract Base Class for 2 dimensional interpolation
+    Abstract Base Class for 2 dimensional interpolation. Note the dimensions
+    Assuming we want a volatility surface with time / delta dimensions with time being
+    the "row" or first dimension and delta being the "column" or second dimension.
+
+    Then the inputs would be built as:
+        timeVector = [0, 1/12, 2/12, 3/12, 6/12, 12/12]
+        deltaVector = [0.25, 50, 75]
+
+    Then, "using namespace boost::assign;", construct the input vector of vectors as
+        vector<double> v0, v1, v2;
+        v0 += .17938,   .182884,    .193908,    .219688,    .248396,    .263268; // 25 Delta put
+        v1 += .175,     .175,       .18,        .205,       .235,       .2475;
+        v2 += .20128,   .204784,    .216708,    .250288,    .287796,    .307068; // 75 Delta put
+
+        vector<vector<double>> volatility;
+        volatility += v0, v1, v2;
+
    ======================================================================================*/
     class TwoDimensionalInterpolator
     {

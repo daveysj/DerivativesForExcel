@@ -52,12 +52,12 @@ namespace XLLBasicLibrary
             errorMessage = className + ": Y inputs not structly increasing";
             return false;
         }
-        if (y.size() != zColumns) 
+        if (y.size() != zRows) 
         {
             errorMessage = className + ": Y vector has inconsistent dimension with z data";
             return false;
         }
-        if (x.size() != zRows) 
+        if (x.size() != zColumns) 
         {
             errorMessage = className + ": X vector has inconsistent dimension with z data";
             return false;
@@ -69,37 +69,57 @@ namespace XLLBasicLibrary
     bool TwoDimensionalInterpolator::isInRange(double x, double y) const
     {
         if (allowExtrapolation)
+        {
             return true;
+        }
         else if ((x >= getXStart()) && (x <= getXEnd()) && (y >= getYStart()) && (y <= getYEnd()))
+        {
             return true;
+        }
         return false;
     }
 
     size_t TwoDimensionalInterpolator::locateX(double xInput) const
     {
         if (xInput < getXStart())
+        {
             return 0;
+        }
         else if (xInput > getXEnd())
+        {
             return x.size() - 2;
+        }
         size_t index = 0;
         while ((index < x.size()) && (x[index] < xInput))
+        {
             ++index;
+        }
         if (index > 0)
+        {
             --index;
+        }
         return index;
     }
 
     size_t TwoDimensionalInterpolator::locateY(double yInput) const 
     {
         if (yInput < getYStart())
+        {
             return 0;
+        }
         else if (yInput > getYEnd())
+        {
             return y.size() - 2;
+        }
         size_t index = 0;
         while ((index < y.size()) && (y[index] < yInput))
+        {
             ++index;
+        }
         if (index > 0)
+        {
             --index;
+        }
         return index;
     }
 

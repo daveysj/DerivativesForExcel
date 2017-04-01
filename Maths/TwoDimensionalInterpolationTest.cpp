@@ -29,6 +29,9 @@ void Maths2DInterpTest::testBilinearInterpolator()
     vector<vector<double>> volatility;
     volatility += v1, v2, v3, v4, v5;
 
+    // x = time = 6 x 1
+    // y = delta = 5 x 1
+    // z = volatility = 6 x 5
     BilinearInterpolator interpolator(time, delta, volatility, false);
     BOOST_REQUIRE(interpolator.isOk());
     BOOST_CHECK(interpolator.isInRange(1.5, 75));
@@ -54,26 +57,22 @@ void Maths2DInterpTest::testBilinearInterpolator()
     lVector.push_back(LinearArrayInterpolator(time, v4, true));
     lVector.push_back(LinearArrayInterpolator(time, v5, true));
 
-    double xPoint = 9;
-    double yPoint = 33;
+    double timePoint = 9;
+    double deltaPoint = 33;
     vector<double> lPoints = vector<double>(lVector.size());
     for (size_t i = 0; i < lVector.size(); ++i)
     {
-        lPoints[i] = lVector[i].getRate(yPoint);
+        lPoints[i] = lVector[i].getRate(timePoint);
     }
 
     LinearArrayInterpolator finalInterpolator = LinearArrayInterpolator(delta, lPoints, true);
-
-    BOOST_CHECK(abs(interpolator.getRate(xPoint, yPoint) - finalInterpolator.getRate(xPoint)) < 1e-12);
+    BOOST_CHECK(abs(interpolator.getRate(timePoint, deltaPoint) - finalInterpolator.getRate(deltaPoint)) < 1e-12);
     BOOST_CHECK(boost::math::isnan<double>(interpolator.getRate(9, 95)));
-
-
 }
 
 void Maths2DInterpTest::testBicubicInterpolator()
 {
     BOOST_TEST_MESSAGE("Testing BilinearCubic class ...");
-    /*
     vector<double> time;
     time += 1, 2, 3, 6, 12, 24;
 
@@ -90,41 +89,42 @@ void Maths2DInterpTest::testBicubicInterpolator()
     vector<vector<double>> volatility;
     volatility += v1, v2, v3, v4, v5;
 
-    QuantLib::Matrix M = QuantLib::Matrix(time.size(), delta.size());
-    for (size_t i = 0; i < delta.size(); ++i) {
-        for (size_t j = 0; j < time.size(); ++j) {
-            M[i][j] = volatility[i][j];
-        }
+    BicubicInterpolator interpolator(time, delta, volatility, false);
+    BOOST_REQUIRE(interpolator.isOk());
+    BOOST_CHECK(interpolator.isInRange(1.5, 75));
+    BOOST_CHECK(!interpolator.isInRange(0.5, 75));
+    BOOST_CHECK(!interpolator.isInRange(36.5, 75));
+    BOOST_CHECK(!interpolator.isInRange(1.5, 5));
+    BOOST_CHECK(!interpolator.isInRange(1.5, 95));
+
+    BOOST_CHECK(interpolator.locateX(0) == 0);
+    BOOST_CHECK(interpolator.locateX(1.1) == 0);
+    BOOST_CHECK(interpolator.locateX(2.1) == 1);
+    BOOST_CHECK(interpolator.locateX(36) == 4);
+
+    BOOST_CHECK(interpolator.locateY(0) == 0);
+    BOOST_CHECK(interpolator.locateY(12) == 0);
+    BOOST_CHECK(interpolator.locateY(26) == 1);
+    BOOST_CHECK(interpolator.locateY(100) == 3);
+
+    vector<CubicSplineInterpolator> lVector;
+    lVector.push_back(CubicSplineInterpolator(time, v1, true));
+    lVector.push_back(CubicSplineInterpolator(time, v2, true));
+    lVector.push_back(CubicSplineInterpolator(time, v3, true));
+    lVector.push_back(CubicSplineInterpolator(time, v4, true));
+    lVector.push_back(CubicSplineInterpolator(time, v5, true));
+
+    double timePoint = 9;
+    double deltaPoint = 33;
+    vector<double> lPoints = vector<double>(lVector.size());
+    for (size_t i = 0; i < lVector.size(); ++i)
+    {
+        lPoints[i] = lVector[i].getRate(timePoint);
     }
 
-    BicubicInterpolator interpolator(time, delta, M, false);
-    BOOST_REQUIRE(interpolator.isOk());
-   BOOST_CHECK(interpolator.isInRange(1.5, 75));
-   BOOST_CHECK(!interpolator.isInRange(0.5, 75));
-   BOOST_CHECK(!interpolator.isInRange(36.5, 75));
-   BOOST_CHECK(!interpolator.isInRange(1.5, 5));
-   BOOST_CHECK(!interpolator.isInRange(1.5, 95));
-
-   BOOST_CHECK(interpolator.locateX(0) == 0);
-   BOOST_CHECK(interpolator.locateX(1.1) == 0);
-   BOOST_CHECK(interpolator.locateX(2.1) == 1);
-   BOOST_CHECK(interpolator.locateX(36) == 4);
-
-   BOOST_CHECK(interpolator.locateY(0) == 0);
-   BOOST_CHECK(interpolator.locateY(12) == 0);
-   BOOST_CHECK(interpolator.locateY(26) == 1);
-   BOOST_CHECK(interpolator.locateY(100) == 3);
-
-    QuantLib::BicubicSpline qlInterp = QuantLib::BicubicSpline(time.begin(), time.end(), delta.begin(), delta.end(), M);
-    double me = interpolator.getRate(6, 50);
-    double ql = qlInterp(6, 50);
-   BOOST_CHECK(interpolator.getRate(6, 50) == qlInterp(6, 50));
-   BOOST_CHECK(interpolator.getRate(1, 10) == qlInterp(1, 10));
-   BOOST_CHECK(interpolator.getRate(24, 90) == qlInterp(24, 90));
-   BOOST_CHECK(interpolator.getRate(9, 33) == qlInterp(9, 33));
-   BOOST_CHECK(boost::math::isnan<double>(interpolator.getRate(9, 95)));
-   */
-
+    CubicSplineInterpolator finalInterpolator = CubicSplineInterpolator(delta, lPoints, true);
+    BOOST_CHECK(abs(interpolator.getRate(timePoint, deltaPoint) - finalInterpolator.getRate(deltaPoint)) < 1e-12);
+    BOOST_CHECK(boost::math::isnan<double>(interpolator.getRate(9, 95)));
 }
 
 
