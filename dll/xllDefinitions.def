@@ -1,0 +1,12 @@
+EXPORTS
+	
+	xlAutoOpen
+	xlAutoClose
+	xlAutoFree
+	xlAddInManagerInfo
+
+    xllInterpolate
+    prVolFromDeltaSurface
+    prOptionValue
+    prOptionDelta
+    
