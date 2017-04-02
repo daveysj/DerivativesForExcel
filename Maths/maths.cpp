@@ -308,7 +308,7 @@ namespace XLLBasicLibrary
         }
    
         double sig, p;
-        for (int i = 1; i < n - 1; ++i) 
+        for (size_t i = 1; i < n - 1; ++i) 
         {
             sig = (xVector[i] - xVector[i-1]) / (xVector[i+1] - xVector[i-1]);
             p = sig * spline[i-1] + 2.0;
