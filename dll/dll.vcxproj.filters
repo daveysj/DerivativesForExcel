@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="excelIntegration">
+      <UniqueIdentifier>{7995d192-c6eb-48d8-b632-7ea8ec885bcc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="excelIntegration\cpp_xloper.cpp">
+      <Filter>excelIntegration</Filter>
+    </ClCompile>
+    <ClCompile Include="excelIntegration\xl_array.cpp">
+      <Filter>excelIntegration</Filter>
+    </ClCompile>
+    <ClCompile Include="excelIntegration\xllInterface.cpp">
+      <Filter>excelIntegration</Filter>
+    </ClCompile>
+    <ClCompile Include="excelIntegration\xloper.cpp">
+      <Filter>excelIntegration</Filter>
+    </ClCompile>
+    <ClCompile Include="xllFunctionSupport.cpp" />
+    <ClCompile Include="xllFunctions.cpp" />
+    <ClCompile Include="registerXllFunctions.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="excelIntegration\cpp_xloper.h">
+      <Filter>excelIntegration</Filter>
+    </ClInclude>
+    <ClInclude Include="excelIntegration\xl_array.h">
+      <Filter>excelIntegration</Filter>
+    </ClInclude>
+    <ClInclude Include="excelIntegration\xlcall.h">
+      <Filter>excelIntegration</Filter>
+    </ClInclude>
+    <ClInclude Include="excelIntegration\xllAddIn.h">
+      <Filter>excelIntegration</Filter>
+    </ClInclude>
+    <ClInclude Include="excelIntegration\xloper.h">
+      <Filter>excelIntegration</Filter>
+    </ClInclude>
+    <ClInclude Include="xllFunctions.h" />
+    <ClInclude Include="xllFunctionSupport.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="xllDefinitions.def" />
+  </ItemGroup>
+</Project>
