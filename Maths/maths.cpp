@@ -206,7 +206,7 @@ namespace XLLBasicLibrary
         // We find the right place in the table by means of bisection. This will return the two "extreme" points
         // if we are extrapolating outside the curve
         int ilo = 0;
-        int ihi = xVector.size() - 1;
+        int ihi = (int) xVector.size() - 1;
         int i;
         while (ihi - ilo > 1) 
         {
@@ -266,7 +266,7 @@ namespace XLLBasicLibrary
         // We find the right place in the table by means of bisection. This will return the two "extreme" points
         // if we are extrapolating outside the curve
         int klo = 0;
-        int khi = spline.size() - 1;
+        int khi = (int) spline.size() - 1;
         int k;
         while (khi - klo > 1) 
         {
@@ -294,7 +294,7 @@ namespace XLLBasicLibrary
 
     void CubicSplineInterpolator::setSpline()
     {
-        int n = spline.size();
+        size_t n = spline.size();
         std::vector<double> tempCalcuation(n);
         spline[0] = -.5;
         if (_yp1 == 0)
