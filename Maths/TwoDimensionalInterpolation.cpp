@@ -178,13 +178,6 @@ namespace XLLBasicLibrary
         {
             vector<double> z_i = z[i];
             splines.push_back(CubicSplineInterpolator(xVector, z_i, 0, 0, false));
-
-            //splines.push_back(CubicInterpolation(
-            //    x.begin(), x.end(),
-            //    this->z.row_begin(i),
-            //    CubicInterpolation::Spline, false,
-            //    CubicInterpolation::SecondDerivative, 0.0,
-            //    CubicInterpolation::SecondDerivative, 0.0));
         }
     };
 

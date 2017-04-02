@@ -141,11 +141,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Derivatives\Black76FormulaTest.cpp" />
+    <ClCompile Include="..\Derivatives\VolatilitySurfacesDeltaTest.cpp" />
     <ClCompile Include="..\Maths\MathsTest.cpp" />
     <ClCompile Include="..\Maths\TwoDimensionalInterpolationTest.cpp" />
     <ClCompile Include="XLLBasicLibraryTest.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Derivatives\Black76FormulaTest.h" />
+    <ClInclude Include="..\Derivatives\VolatilitySurfacesDeltaTest.h" />
     <ClInclude Include="..\Maths\MathsTest.h" />
     <ClInclude Include="..\Maths\TwoDimensionalInterpolationTest.h" />
     <ClInclude Include="XLLBasicLibraryTest.h" />

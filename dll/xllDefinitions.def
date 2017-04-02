@@ -6,7 +6,7 @@ EXPORTS
 	xlAddInManagerInfo
 
     xllInterpolate
-    prVolFromDeltaSurface
+    xllBlackVolOffSurface
     prOptionValue
     prOptionDelta
     

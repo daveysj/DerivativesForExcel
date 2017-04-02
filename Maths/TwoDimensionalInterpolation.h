@@ -65,7 +65,6 @@ namespace XLLBasicLibrary
         double getYEnd()   const {return y.back();};
 
    protected:
-        void setOnError(string errorMessage);
 
         vector<double> x, y;
         vector<vector<double> > z;

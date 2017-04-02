@@ -8,6 +8,9 @@
     <Filter Include="Maths">
       <UniqueIdentifier>{e00f281c-caac-4c24-87ce-14fc5cfce985}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Derivatives">
+      <UniqueIdentifier>{f7384504-8a06-4f53-a905-80308ca63ed2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Maths\maths.cpp">
@@ -16,6 +19,12 @@
     <ClCompile Include="..\Maths\TwoDimensionalInterpolation.cpp">
       <Filter>Maths</Filter>
     </ClCompile>
+    <ClCompile Include="..\Derivatives\Black76Formula.cpp">
+      <Filter>Derivatives</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Derivatives\VolatilitySurfaceDelta.cpp">
+      <Filter>Derivatives</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Maths\maths.h">
@@ -23,6 +32,12 @@
     </ClInclude>
     <ClInclude Include="..\Maths\TwoDimensionalInterpolation.h">
       <Filter>Maths</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Derivatives\Black76Formula.h">
+      <Filter>Derivatives</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Derivatives\VolatilitySurfaceDelta.h">
+      <Filter>Derivatives</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

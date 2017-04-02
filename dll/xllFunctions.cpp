@@ -34,7 +34,7 @@ xloper* __stdcall xllInterpolate(
     }
     string type = string(interpolatorType);
     boost::to_lower(type);
-    if (type.compare("linear") == 0)
+    if (type.compare("") == 0 || type.compare("linear") == 0)
     {
         interpolator = shared_ptr<ArrayInterpolator>(
             new  LinearArrayInterpolator(xVector, yVector, extrapolate));
@@ -55,14 +55,16 @@ xloper* __stdcall xllInterpolate(
     return outputMatrix.ExtractXloper(false);
 }
 
-xloper* __stdcall prVolFromDeltaSurface(
-    char* type,
-    double anchorDate,
-    xl_array *surface,
-    double toDate,
-    double strike,
-    double forward,
-    bool extrapolate)
+xloper* __stdcall xllBlackVolOffSurface(
+	char* optionType,
+	double forward,
+	double strike,
+	double time,
+	xl_array *timeArray,
+	xl_array *putDeltaArray,
+	xl_array *surface,
+	char* type,
+	bool extrapolate)
 {
     string errorMessage = "Not yet implemented";
     return returnXloperOnError(errorMessage);

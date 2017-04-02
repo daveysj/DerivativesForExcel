@@ -8,6 +8,9 @@
     <Filter Include="Maths">
       <UniqueIdentifier>{df0494cb-daa2-4806-846a-d149bd6b01ff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Derivatives">
+      <UniqueIdentifier>{23c22c3f-a54a-4c08-bc7f-51174bc3df1a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Maths\MathsTest.cpp">
@@ -17,6 +20,12 @@
       <Filter>Maths</Filter>
     </ClCompile>
     <ClCompile Include="XLLBasicLibraryTest.cpp" />
+    <ClCompile Include="..\Derivatives\Black76FormulaTest.cpp">
+      <Filter>Derivatives</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Derivatives\VolatilitySurfacesDeltaTest.cpp">
+      <Filter>Derivatives</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Maths\MathsTest.h">
@@ -26,5 +35,11 @@
       <Filter>Maths</Filter>
     </ClInclude>
     <ClInclude Include="XLLBasicLibraryTest.h" />
+    <ClInclude Include="..\Derivatives\Black76FormulaTest.h">
+      <Filter>Derivatives</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Derivatives\VolatilitySurfacesDeltaTest.h">
+      <Filter>Derivatives</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

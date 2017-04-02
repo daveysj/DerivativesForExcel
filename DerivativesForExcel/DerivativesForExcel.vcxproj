@@ -121,10 +121,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Derivatives\Black76Formula.cpp" />
+    <ClCompile Include="..\Derivatives\VolatilitySurfaceDelta.cpp" />
     <ClCompile Include="..\Maths\maths.cpp" />
     <ClCompile Include="..\Maths\TwoDimensionalInterpolation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Derivatives\Black76Formula.h" />
+    <ClInclude Include="..\Derivatives\VolatilitySurfaceDelta.h" />
     <ClInclude Include="..\Maths\maths.h" />
     <ClInclude Include="..\Maths\TwoDimensionalInterpolation.h" />
   </ItemGroup>

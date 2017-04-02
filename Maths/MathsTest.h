@@ -1,5 +1,5 @@
-#ifndef sjd_test_maths
-#define sjd_test_maths
+#ifndef XLLBASIC_test_maths
+#define XLLBASIC_test_maths
 
 #include <iostream>
 #include <boost\test\unit_test.hpp>

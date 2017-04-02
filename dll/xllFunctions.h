@@ -15,14 +15,16 @@ xloper* __stdcall xllInterpolate(
     char* interpolatorType = "Linear", // Linear or Cubic                                
     bool extrapolate = false);
 
-xloper* __stdcall prVolFromDeltaSurface(
-    char* type, 
-    double anchorDate, 
-    xl_array *surface, 
-    double toDate, 
-    double strike, 
-    double forward, 
-    bool extrapolate);
+xloper* __stdcall xllBlackVolOffSurface(
+	char* optionType,
+	double forward,
+	double strike,
+	double time,
+	xl_array *timeArray,
+	xl_array *putDeltaArray,
+	xl_array *surface,
+	char* type,
+	bool extrapolate);
 
 xloper* __stdcall prOptionValue(
     char* putOrCall, 
