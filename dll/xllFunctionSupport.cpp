@@ -24,19 +24,30 @@ bool constructVector(xl_array* xlArray, vector<double> &outputVector, string &er
     WORD xlArray_rows, xlArray_columns;
     cpp_xloper cppXloper(xlArray);
     cppXloper.GetArraySize(xlArray_rows, xlArray_columns);
-    if (xlArray_columns != 1) 
+    if (!((xlArray_columns == 1) || (xlArray_rows == 1)))
     {
         successful = false;
-        errorMessage = "Input not a column vector";
+        errorMessage = "Input not a vector";
         return false;
     }
     double rate;
     outputVector = vector<double>();
-    for (WORD i = 0; i < xlArray_rows; ++i) 
-    {
-        cppXloper.GetArrayElement(i, 0, rate);
-        outputVector.push_back(rate);
-    }
+	if (xlArray_columns == 1)
+	{
+		for (WORD i = 0; i < xlArray_rows; ++i)
+		{
+			cppXloper.GetArrayElement(i, 0, rate);
+			outputVector.push_back(rate);
+		}
+	}
+	else
+	{
+		for (WORD i = 0; i < xlArray_columns; ++i)
+		{
+			cppXloper.GetArrayElement(0, i, rate);
+			outputVector.push_back(rate);
+		}
+	}
     return successful;
 }
 

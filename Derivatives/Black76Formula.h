@@ -4,6 +4,7 @@
 
 
 #include <boost/math/distributions/normal.hpp> // for normal_distribution
+#include <math.h>
 
 using namespace std;
 
@@ -108,7 +109,8 @@ namespace XLLBasicLibrary
     public :
 		Black76Call(double forward, double strike, double standardDeviation, double discountFactor);
 		double getPremium();
-		double getPremiumAfterMaturity(double rateSetRate, double discountFactor) {return std::max(rateSetRate - X, 0.0) * discountFactor;};
+		double getPremiumAfterMaturity(double rateSetRate, double discountFactor) 
+		{return max(rateSetRate - X, 0.0) * discountFactor;};
 		double getDelta(); 
 
     };
@@ -121,7 +123,7 @@ namespace XLLBasicLibrary
     public :
 		Black76Put(double forward, double strike, double standardDeviation, double discountFactor);
 		double getPremium();
-		double getPremiumAfterMaturity(double rateSetRate, double discountFactor) {return std::max(X - rateSetRate, 0.0) * discountFactor;};
+		double getPremiumAfterMaturity(double rateSetRate, double discountFactor) {return max(X - rateSetRate, 0.0) * discountFactor;};
 		double getDelta(); 
     };
 }

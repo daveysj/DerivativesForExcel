@@ -5,6 +5,7 @@
 
 #include "..\Maths\maths.h"
 #include "..\Maths\TwoDimensionalInterpolation.h"
+#include "..\Derivatives\VolatilitySurfaceDelta.h"
 
 
 xloper* __stdcall xllInterpolate(
@@ -23,6 +24,7 @@ xloper* __stdcall xllBlackVolOffSurface(
 	xl_array *timeArray,
 	xl_array *putDeltaArray,
 	xl_array *surface,
+	double convergenceThreshold,
 	char* type,
 	bool extrapolate);
 

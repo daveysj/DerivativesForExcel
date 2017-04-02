@@ -44,9 +44,9 @@ char *FunctionExports[NUM_FUNCTIONS][MAX_EXCEL4_ARGS - 1] =
     },
     {
         "xllBlackVolOffSurface",
-        "PCBBKKBCA",
+        "PCBBBKKKBCA",
         "xllBlackVolOffSurface",
-        "OptionType,Forward,Strike,Time,TimeInput,PutDelta,Volatility,InterpType,Extrap",
+        "OptionType,Forward,Strike,Time,TimeInput,PutDelta,Volatility,Convergence,InterpType,Extrap",
         "1",
         AddinName,
         "",
@@ -60,6 +60,7 @@ char *FunctionExports[NUM_FUNCTIONS][MAX_EXCEL4_ARGS - 1] =
 		"Time dimension (should be a column)",
 		"Put Delta dimension (should be a row)",
 		"Volatility Surface",
+		"Convergence (Enter any double value, for now this is not implemented)"
 		"Linear or Cubic (default = linear)",
         "Allow extrapolation (default = false)",
         "",

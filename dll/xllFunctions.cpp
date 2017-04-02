@@ -63,11 +63,47 @@ xloper* __stdcall xllBlackVolOffSurface(
 	xl_array *timeArray,
 	xl_array *putDeltaArray,
 	xl_array *surface,
+	double convergenceThreshold,
 	char* type,
 	bool extrapolate)
 {
-    string errorMessage = "Not yet implemented";
-    return returnXloperOnError(errorMessage);
+    string errorMessage = "";
+	if ((forward < 1e-14) || (strike < 1e-14) || (time < 1e-14))
+	{
+		return returnXloperOnError("Numeric inputs must be strictly positive");
+	}
+	vector<double> timeVector;
+	if (!constructVector(timeArray, timeVector, errorMessage))
+	{
+		return returnXloperOnError(errorMessage);
+	}
+	vector<double> deltaVector;
+	if (!constructVector(putDeltaArray, deltaVector, errorMessage))
+	{
+		return returnXloperOnError(errorMessage);
+	}
+	vector<vector<double>> surfaceData;
+	if (!extractDataFromSurface(surface, surfaceData, errorMessage))
+	{
+		return returnXloperOnError(errorMessage);
+	}
+
+	if (string(type).compare("") == 0)
+	{
+		type = "bilinear";
+	}
+	SimpleDeltaSurface deltaSurface(timeVector, deltaVector, surfaceData, extrapolate, type);
+
+	double moneyness = (strike - forward) / forward;
+	if (!deltaSurface.isInMoneynessRange(time, moneyness))
+	{
+		return returnXloperOnError("Point to interpolate is outside of the surface range and extrapolation is set to false");
+	}
+
+	double vol = deltaSurface.getVolatilityForMoneyness(time, moneyness);
+	cpp_xloper outputObject(1, 1);
+	outputObject.SetArrayElement(0, 0, vol);
+	return outputObject.ExtractXloper(false);
 }
 
 xloper* __stdcall prOptionValue(
@@ -79,6 +115,8 @@ xloper* __stdcall prOptionValue(
 {
     string errorMessage = "Not yet implemented";
     return returnXloperOnError(errorMessage);
+
+
 }
 
 xloper* __stdcall prOptionDelta(
