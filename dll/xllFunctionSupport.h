@@ -53,6 +53,7 @@ Take and *xl_array and turn it into a vector or vectors, creating detail about t
 =======================================================================================*/
 bool extractDataFromSurface(
     xl_array* surfaceInput,
+	bool transpose,
     vector<vector<double>> &data,
     string &errorMessage);
 

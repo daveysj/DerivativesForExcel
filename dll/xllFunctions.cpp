@@ -67,43 +67,63 @@ xloper* __stdcall xllBlackVolOffSurface(
 	char* type,
 	bool extrapolate)
 {
-    string errorMessage = "";
-	if ((forward < 1e-14) || (strike < 1e-14) || (time < 1e-14))
+	try
 	{
-		return returnXloperOnError("Numeric inputs must be strictly positive");
-	}
-	vector<double> timeVector;
-	if (!constructVector(timeArray, timeVector, errorMessage))
-	{
-		return returnXloperOnError(errorMessage);
-	}
-	vector<double> deltaVector;
-	if (!constructVector(putDeltaArray, deltaVector, errorMessage))
-	{
-		return returnXloperOnError(errorMessage);
-	}
-	vector<vector<double>> surfaceData;
-	if (!extractDataFromSurface(surface, surfaceData, errorMessage))
-	{
-		return returnXloperOnError(errorMessage);
-	}
+		string errorMessage = "";
+		if ((forward < 1e-14) || (strike < 1e-14) || (time < 1e-14))
+		{
+			return returnXloperOnError("Numeric inputs must be strictly positive");
+		}
+		vector<double> timeVector;
+		if (!constructVector(timeArray, timeVector, errorMessage))
+		{
+			return returnXloperOnError(errorMessage);
+		}
+		double yearFraction = 1 / 365.0;
+		transform(timeVector.begin(), timeVector.end(), timeVector.begin(), bind1st(multiplies<double>(), yearFraction));
 
-	if (string(type).compare("") == 0)
-	{
-		type = "bilinear";
-	}
-	SimpleDeltaSurface deltaSurface(timeVector, deltaVector, surfaceData, extrapolate, type);
+		vector<double> deltaVector;
+		if (!constructVector(putDeltaArray, deltaVector, errorMessage))
+		{
+			return returnXloperOnError(errorMessage);
+		}
+		// Check if the input array needs to be transposed or not
+		WORD timeArray_rows, timeArray_columns;
+		cpp_xloper timeXloper(timeArray);
+		timeXloper.GetArraySize(timeArray_rows, timeArray_columns);
+		bool transpose = false;
+		if (timeArray_columns == 1 && timeArray_rows > 1)
+		{
+			transpose = true; 
+		}
+		vector<vector<double>> surfaceData;
+		if (!extractDataFromSurface(surface, transpose, surfaceData, errorMessage))
+		{
+			return returnXloperOnError(errorMessage);
+		}
 
-	double moneyness = (strike - forward) / forward;
-	if (!deltaSurface.isInMoneynessRange(time, moneyness))
-	{
-		return returnXloperOnError("Point to interpolate is outside of the surface range and extrapolation is set to false");
-	}
+		if (string(type).compare("") == 0)
+		{
+			type = "bilinear";
+		}
+		// Set extrapolate to true to ensure we can solve for vol 
+		SimpleDeltaSurface deltaSurface(timeVector, deltaVector, surfaceData, true, type);
 
-	double vol = deltaSurface.getVolatilityForMoneyness(time, moneyness);
-	cpp_xloper outputObject(1, 1);
-	outputObject.SetArrayElement(0, 0, vol);
-	return outputObject.ExtractXloper(false);
+		double moneyness = (strike - forward) / forward;
+		if (!deltaSurface.isInMoneynessRange(time * yearFraction, moneyness))
+		{
+			return returnXloperOnError("Point to interpolate is outside of the surface range and extrapolation is set to false");
+		}
+
+		double vol = deltaSurface.getVolatilityForMoneyness(time * yearFraction, moneyness);
+		cpp_xloper outputObject(1, 1);
+		outputObject.SetArrayElement(0, 0, vol);
+		return outputObject.ExtractXloper(false);
+	}
+	catch (exception &e)
+	{
+		return returnXloperOnError(e.what());
+	}
 }
 
 xloper* __stdcall prOptionValue(

@@ -59,6 +59,7 @@ Take and *xl_array and turn it into a vector or vectors, creating detail about t
 =======================================================================================*/
 bool extractDataFromSurface(
     xl_array* surfaceInput,
+	bool transpose,
     vector<vector<double>> &data,
     string &errorMessage)
 {
@@ -76,19 +77,44 @@ bool extractDataFromSurface(
         return successful;
     }
     double value;
-    for (WORD i = 0; i < xlArray_rows; ++i)
-    {
-        for (WORD j = 0; j < xlArray_columns; ++j)
-        {
-            if (!cppXloper.GetArrayElement(i, j, value))
-            {
-                successful = false;
-                errorMessage = "At least one data point is not a numeric value";
-                return successful;
-            }
-            data[i][j] = (value);
-        }
-    }
+	vector<double> zeroVector;
+	data.clear();
+	if (transpose)
+	{
+		zeroVector = vector<double>(xlArray_rows, 0);
+		for (WORD i = 0; i < xlArray_columns; ++i)
+		{
+			data.push_back(zeroVector);
+			for (WORD j = 0; j < xlArray_rows; ++j)
+			{
+				if (!cppXloper.GetArrayElement(j, i, value))
+				{
+					successful = false;
+					errorMessage = "At least one data point is not a numeric value";
+					return successful;
+				}
+				data[i][j] = (value);
+			}
+		}
+	}
+	else
+	{
+		zeroVector = vector<double>(xlArray_columns, 0);
+		for (WORD i = 0; i < xlArray_rows; ++i)
+		{
+			data.push_back(zeroVector);
+			for (WORD j = 0; j < xlArray_columns; ++j)
+			{
+				if (!cppXloper.GetArrayElement(i, j, value))
+				{
+					successful = false;
+					errorMessage = "At least one data point is not a numeric value";
+					return successful;
+				}
+				data[i][j] = (value);
+			}
+		}
+	}
     return successful;
 }
 

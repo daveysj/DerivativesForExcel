@@ -9,29 +9,16 @@ namespace XLLBasicLibrary
 	SimpleDeltaSurface::SimpleDeltaSurface(
 		vector<double> timesInput,
 		vector<double> deltaInput,
-		vector<vector<double>> volatility,
+		vector<vector<double>> volatilityInput,
 		bool extrapolate,
 		string interpolationType)
-		: extrapolate(extrapolate), times(timesInput), delta(deltaInput)
+		: extrapolate(extrapolate), times(timesInput), delta(deltaInput), volatility(volatilityInput)
 	{
 		className = "SimpleDeltaSurface";
-		size_t rows = volatility.size();
-		size_t columns = volatility[0].size();
-		if (delta[0] < 1.0)
+		string errorMessage;
+		if (!checkAndTransformInputs(errorMessage))
 		{
-			for (size_t i = 0; i < delta.size(); ++i)
-			{
-				delta[i] *= 100;
-			}
-		}
-		if (times[0] > 0)
-		{
-			times.insert(times.begin(), 0);
-			for (size_t i = 0; i < volatility.size(); ++i)
-			{
-				double vol = volatility[i][0];
-				volatility[i].insert(volatility[i].begin(), vol);
-			}
+			throw runtime_error(errorMessage);
 		}
 
 		boost::algorithm::to_lower(interpolationType);
@@ -59,6 +46,39 @@ namespace XLLBasicLibrary
 		{
 			throw runtime_error(className + "Interpolation Type must be either Bilinear or Bicubic");
 		}
+	}
+
+	bool SimpleDeltaSurface::checkAndTransformInputs(string &reasonForFailure)
+	{
+		if (delta[0] < 1.0)
+		{
+			for (size_t i = 0; i < delta.size(); ++i)
+			{
+				delta[i] *= 100;
+			}
+		}
+		// insert data at time 0 to ensure we can find sort dated volatility
+		if (times[0] > 0)
+		{
+			times.insert(times.begin(), 0);
+			for (size_t i = 0; i < volatility.size(); ++i)
+			{
+				double vol = volatility[i][0];
+				volatility[i].insert(volatility[i].begin(), vol);
+			}
+		}
+		// Vol is probably an integer not a decimal so change it
+		if (volatility[0][0] > 2.0)
+		{
+			for (size_t i = 0; i < volatility.size(); ++i)
+			{
+				for (size_t j = 0; j < volatility[i].size(); ++j)
+				{
+					volatility[i][j] /= 100;
+				}
+			}
+		}
+		return true;
 	}
 
 	bool SimpleDeltaSurface::isInDeltaRange(double time, double delta)

@@ -15,7 +15,10 @@ namespace XLLBasicLibrary
 	/*======================================================================================
 	SimpleDeltaSurface
 
-	Used for excel *formula* rather than excel *objects*
+	Note:
+	- Delta is assumed to be an integer i.e. 25-delta must be input as 25 and not 0.25
+	- Volatility is assumed to be a percentage to 20-vol must be input as 0.20 and not 20
+	- Time is assumed to be a year fraction.
 
 	Moneyness = (strike - forward) / forward
 	=======================================================================================*/
@@ -28,6 +31,9 @@ namespace XLLBasicLibrary
 			bool extrapolate,
 			string interpolationType);
 
+		// try to change inputs so they are consistent with the class requirements
+		// return false if unable to do this
+		bool checkAndTransformInputs(string &reasonForFailure);
 
 		bool isInDeltaRange(double time, double delta);
 		bool isInMoneynessRange(double time, double moneyness);
