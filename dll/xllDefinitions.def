@@ -7,6 +7,6 @@ EXPORTS
 
     xllInterpolate
     xllBlackVolOffSurface
-    prOptionValue
-    prOptionDelta
+    xllBlack
+	xllBlackDelta
     

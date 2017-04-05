@@ -32,6 +32,8 @@ xloper* __stdcall xllInterpolate(
     {
         return returnXloperOnError("input vectors are smaller than their size input");
     }
+	xVector.resize(arrayInputSize);
+	yVector.resize(arrayInputSize);
     string type = string(interpolatorType);
     boost::to_lower(type);
     if (type.compare("") == 0 || type.compare("linear") == 0)
@@ -49,6 +51,10 @@ xloper* __stdcall xllInterpolate(
     {
         return returnXloperOnError("Type must be either linear or cubic");
     }
+	if (!interpolator->isOk())
+	{
+		return returnXloperOnError(interpolator->getErrorMessage());
+	}
 
     cpp_xloper outputMatrix(1, 1);
     outputMatrix.SetArrayElement(0, 0, interpolator->getRate(xValue));
@@ -126,26 +132,91 @@ xloper* __stdcall xllBlackVolOffSurface(
 	}
 }
 
-xloper* __stdcall prOptionValue(
+xloper* __stdcall xllBlack(
     char* putOrCall,
     double forward,
     double strike,
+	double dtm,
     double standardDeviation,
     double discountFactor)
 {
-    string errorMessage = "Not yet implemented";
-    return returnXloperOnError(errorMessage);
+	if ((forward < 1e-14) || (strike < 1e-14) || (standardDeviation < 1e-14) || (discountFactor < 1e-14))
+	{
+		return returnXloperOnError("All numeric inputs to this function must be strictly positive");
+	}
 
+	shared_ptr<Black76Option> option;
+	string putOrCallString = string(putOrCall);
+	boost::to_lower(putOrCallString);
+	if (putOrCallString.compare("c") == 0 || putOrCallString.compare("call") == 0)
+	{
+		option = shared_ptr<Black76Call>(new
+			Black76Call(forward, strike, standardDeviation, discountFactor));
+	}
+	else if (putOrCallString.compare("p") == 0|| putOrCallString.compare("put") == 0)
+	{
+		option = shared_ptr<Black76Put>(new
+			Black76Put(forward, strike, standardDeviation, discountFactor));
+	}
+	else
+	{
+		return returnXloperOnError("Option type must be either (P)ut or (C)all");
+	}
+	double optionPremium;
+	if (standardDeviation < 1e-14)
+	{
+		optionPremium = option->getPremiumAfterMaturity(forward, discountFactor);
+	}
+	else
+	{
+		optionPremium = option->getPremium();
+	}
 
+	cpp_xloper outputObject(1, 1);
+	outputObject.SetArrayElement(0, 0, optionPremium);
+	return outputObject.ExtractXloper(false);
 }
 
-xloper* __stdcall prOptionDelta(
+xloper* __stdcall xllBlackDelta(
     char* putOrCall,
     double forward,
     double strike,
+	double dtm,
     double standardDeviation,
     double discountFactor)
 {
-    string errorMessage = "Not yet implemented";
-    return returnXloperOnError(errorMessage);
+	if ((forward < 1e-14) || (strike < 1e-14) || (standardDeviation < 1e-14) || (discountFactor < 1e-14))
+	{
+		return returnXloperOnError("All numeric inputs to this function must be strictly positive");
+	}
+
+	shared_ptr<Black76Option> option;
+	string putOrCallString = string(putOrCall);
+	boost::to_lower(putOrCallString);
+	if (putOrCallString.compare("c") == 0 || putOrCallString.compare("call") == 0)
+	{
+		option = shared_ptr<Black76Call>(new
+			Black76Call(forward, strike, standardDeviation, discountFactor));
+	}
+	else if (putOrCallString.compare("p") == 0 || putOrCallString.compare("put") == 0)
+	{
+		option = shared_ptr<Black76Put>(new
+			Black76Put(forward, strike, standardDeviation, discountFactor));
+	}
+	else
+	{
+		return returnXloperOnError("Option type must be either (P)ut or (C)all");
+	}
+	double optionDelta;
+	if (standardDeviation < 1e-14)
+	{
+		return returnXloperOnError("Option past maturity");
+	}
+	else
+	{
+		optionDelta = option->getDelta();
+	}
+	cpp_xloper outputObject(1, 1);
+	outputObject.SetArrayElement(0, 0, optionDelta);
+	return outputObject.ExtractXloper(false);
 }

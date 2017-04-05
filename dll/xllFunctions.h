@@ -28,18 +28,20 @@ xloper* __stdcall xllBlackVolOffSurface(
 	char* type,
 	bool extrapolate);
 
-xloper* __stdcall prOptionValue(
+xloper* __stdcall xllBlack(
     char* putOrCall, 
     double forward, 
     double strike, 
+	double dtm,
     double standardDeviation, 
     double discountFactor);
 
-xloper* __stdcall prOptionDelta(
+xloper* __stdcall xllBlackDelta(
     char* putOrCall,
     double forward,
     double strike,
-    double standardDeviation,
+    double dtm,
+	double standardDeviation,
     double discountFactor);
 
 
