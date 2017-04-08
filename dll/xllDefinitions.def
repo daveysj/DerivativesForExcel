@@ -5,8 +5,8 @@ EXPORTS
 	xlAutoFree
 	xlAddInManagerInfo
 
-    xllInterpolate
-    xllBlackVolOffSurface
-    xllBlack
-	xllBlackDelta
+    Interpolate
+    BlackVolOffSurface
+    Black
+	BlackDelta
     

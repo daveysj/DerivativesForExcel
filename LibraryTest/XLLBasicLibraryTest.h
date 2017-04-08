@@ -6,5 +6,5 @@
 
 #include "..\Maths\MathsTest.h"
 #include "..\Maths\TwoDimensionalInterpolationTest.h"
-#include "..\Derivatives\Black76FormulaTest.h"""
+#include "..\Derivatives\Black76FormulaTest.h"
 #include "..\Derivatives\VolatilitySurfacesDeltaTest.h"

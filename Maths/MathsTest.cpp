@@ -45,20 +45,20 @@ void MathsFunctionsTest::testArrayInterpolator()
     yVector.push_back(m * x + c);
     LinearArrayInterpolator interp(xVector, yVector, true);    
     BOOST_CHECK(interp.isOk() == false);
-    BOOST_CHECK(boost::math::isnan<double>(interp.getRate(3.5)) == true);
+	BOOST_REQUIRE_THROW(interp.getRate(3.5), runtime_error);
 
     xVector.pop_back();
     xVector.push_back(5);
     xVector.push_back(6);
     interp = LinearArrayInterpolator(xVector, yVector, true); // inconsistent dimensions
     BOOST_CHECK(interp.isOk() == false);
-    BOOST_CHECK(boost::math::isnan<double>(interp.getRate(3.5)) == true);
+	BOOST_REQUIRE_THROW(interp.getRate(3.5), runtime_error);
 
     xVector.clear();
     yVector.clear();
     interp = LinearArrayInterpolator(xVector, yVector, true); // no data
     BOOST_CHECK(interp.isOk() == false);
-    BOOST_CHECK(boost::math::isnan<double>(interp.getRate(3.5)) == true);
+	BOOST_REQUIRE_THROW(interp.getRate(3.5), runtime_error);
 
     for (size_t i = 0; i < 5; ++i) 
     {
@@ -126,8 +126,8 @@ void MathsFunctionsTest::testLinearArrayInterpolator()
     LinearArrayInterpolator interpWithoutExtrap(xVector, yVector, false);    
     BOOST_CHECK(interpWithExtrap.getRate(3.5) == (m * 3.5 + c));
     BOOST_CHECK(interpWithExtrap.getRate(4.75) == interpWithoutExtrap.getRate(4.75));
-    BOOST_CHECK(abs(interpWithExtrap.getRate(10.75) - (m * 10.75 + c)) < epsilon);
-    BOOST_CHECK(boost::math::isnan<double>(interpWithoutExtrap.getRate(10.75)) == true);
+    BOOST_CHECK(abs(interpWithExtrap.getRate(10.75) - (m * 10.75 + c)) < epsilon);	
+	BOOST_REQUIRE_THROW(interpWithoutExtrap.getRate(10.75), runtime_error);
 }
 
 void MathsFunctionsTest::testCubicSplineInterpolator() 

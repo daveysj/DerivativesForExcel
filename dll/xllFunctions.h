@@ -7,8 +7,14 @@
 #include "..\Maths\TwoDimensionalInterpolation.h"
 #include "..\Derivatives\VolatilitySurfaceDelta.h"
 
+/*======================================================================================
+Excel Pricing functions
 
-xloper* __stdcall xllInterpolate(
+Converts a string (normally containing an error message) to an *xloper so it can be
+returned to excel
+=======================================================================================*/
+
+xloper* __stdcall Interpolate(
     double xValue,
     xl_array *xArray,
     xl_array *yArray,
@@ -16,19 +22,19 @@ xloper* __stdcall xllInterpolate(
     char* interpolatorType = "Linear", // Linear or Cubic                                
     bool extrapolate = false);
 
-xloper* __stdcall xllBlackVolOffSurface(
+xloper* __stdcall BlackVolOffSurface(
 	char* optionType,
 	double forward,
 	double strike,
-	double time,
-	xl_array *timeArray,
+	double day,
+	xl_array *dayArray,
 	xl_array *putDeltaArray,
 	xl_array *surface,
-	double convergenceThreshold,
+	double convergenceThreshold, // hard coded. only here to keep the function signature unchanged
 	char* type,
 	bool extrapolate);
 
-xloper* __stdcall xllBlack(
+xloper* __stdcall Black(
     char* putOrCall, 
     double forward, 
     double strike, 
@@ -36,7 +42,7 @@ xloper* __stdcall xllBlack(
     double standardDeviation, 
     double discountFactor);
 
-xloper* __stdcall xllBlackDelta(
+xloper* __stdcall BlackDelta(
     char* putOrCall,
     double forward,
     double strike,

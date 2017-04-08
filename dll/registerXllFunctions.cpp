@@ -3,9 +3,9 @@
 
 
 //========================================================================
-char *AddinVersionStr = "Simple pricing add ins for Excel";
-char *AddinName = "SBK";
-char *DevAddinName = "SBK - DEV";
+char *AddinVersionStr = "Derivative pricing";
+char *AddinName = "Pricing";
+char *DevAddinName = "Pricing - DEV";
 
 //---------------------------------------------------------
 // Registered function argument and return types
@@ -23,52 +23,54 @@ char *DevAddinName = "SBK - DEV";
 //---------------------------------------------------------
 char *FunctionExports[NUM_FUNCTIONS][MAX_EXCEL4_ARGS - 1] =
 {
-    {
-        "xllInterpolate",
-        "PBKKICA",
-        "xllInterpolate",
-        "x, x array, y array, size, Type, Extrap",
-        "1",
-        AddinName,
-        "",
-        "",
-        "Interpolation algorithm: Find a y-value corresponding to the input x-value for the points (x_1, y_1),...(x_n,y_n)",
-        // Help text line (optional)
-        "Value to interpolate",
-        "Input x array",
-        "Input y array",
-        "Value(s) at which to interpolate",
-        "Linear or Cubic (default = linear)",
-        "Allow extrapolation (default = false)",
-        "",
-    },
-    {
-        "xllBlackVolOffSurface",
-        "PCBBBKKKBCA",
-        "xllBlackVolOffSurface",
-        "OptionType,Forward,Strike,Time,TimeInput,PutDelta,Volatility,Convergence,InterpType,Extrap",
-        "1",
-        AddinName,
-        "",
-        "",
-        "Returns the volatility to use for a Black-Scholes option from a delta based suface",
+	{
+		"Interpolate",
+		"PBKKICA",
+		"Interpolate",
+		"x, x array, y array, size, Type, Extrap",
+		"1",
+		AddinName,
+		"",
+		"",
+		"Find the y-value corresponding to the input x-value for the points (x_1, y_1),...(x_n,y_n)",
+		// Help text line (optional)
+		"x Value at which to interpolate",
+		"Array containing all the x inputs (must be strictly increasing or decreasing)",
+		"Array containing all the y inputs",
+		"Size of the input arrays to use in the interpolator",
+		"\"Linear\" or \"Cubic\" interpolation (default = \"Linear\")",
+		"Allow extrapolation (default = false)",
+		"",
+	},
+	{
+		"BlackVolOffSurface",
+		"PCBBBKKKBCA",
+		"BlackVolOffSurface",
+		"OptionType,Forward,Strike,Day,Days Array,Put Delta,Volatility,Convergence,InterpType,Extrap",
+		"1",
+		AddinName,
+		"",
+		"",
+		"The volatility of a Black-Scholes option from a delta based surface. Explict assumptions "
+		"include that *time* is measured in *days*; delta is that of a *put* option; "
+		"volatility is a number between 0 and 100 i.e. not a percentage",
         // Help text line (optional)
         "Option Type = (P)ut or (C)all",
 		"Market forward",
-		"Option Strike",
-		"Time to interpolate to",
-		"Time dimension (should be a column)",
-		"Put Delta dimension (should be a row)",
+		"Option strike",
+		"Day to interpolate to",
+		"Days array (NB Time is explicitly assumed to be *DAYS*)",
+		"Delta array (NB Delta is explicitly assumed to be for a *PUT* option)",
 		"Volatility Surface",
-		"Convergence (Enter any double value, for now this is not implemented)"
+		"Convergence (Hard coded - input preserved to keep the function signature constant)",
 		"Linear or Cubic (default = linear)",
         "Allow extrapolation (default = false)",
         "",
     },
     {
-        "xllBlack",
+        "Black",
         "RCBBBBB",
-        "xllBlack",
+        "Black",
         "P/C,forward,strike,dtm,sd,df",
         "1",
         AddinName,
@@ -85,9 +87,9 @@ char *FunctionExports[NUM_FUNCTIONS][MAX_EXCEL4_ARGS - 1] =
         "",
     },
     {
-        "xllBlackDelta",
+        "BlackDelta",
         "RCBBBBB",
-        "xllBlackDelta",
+        "BlackDelta",
         "P/C,forward,strike,dtm,sd,df",
         "1",
         AddinName,

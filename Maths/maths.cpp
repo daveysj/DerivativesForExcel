@@ -193,12 +193,12 @@ namespace XLLBasicLibrary
     {
         if (hasError)
         {
-            return numeric_limits<double>::quiet_NaN();
+            throw runtime_error(errorMessage);
         }
 
         if ((allowExtrapolation == false) && !isInRange(x))
         {
-            return numeric_limits<double>::quiet_NaN();
+			throw runtime_error("Allow extrapolation set to false and point is outside range");
         }
         // we are now either inside the range (if we do not allow extrapolation) or we allow extrapolation
         // using the "closest" points in the input arrays
@@ -255,12 +255,12 @@ namespace XLLBasicLibrary
     {
         if (hasError)
         {
-            return numeric_limits<float>::quiet_NaN();
+			throw runtime_error(errorMessage);
         }
 
         if (!allowExtrapolation && !isInRange(x))
         {
-            return numeric_limits<float>::quiet_NaN();
+			throw runtime_error("Allow extrapolation set to false and point is outside range");
         }
 
         // We find the right place in the table by means of bisection. This will return the two "extreme" points

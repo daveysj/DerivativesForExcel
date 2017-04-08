@@ -10,6 +10,9 @@
 
 using namespace std;
 
+enum PutCall { PUT, CALL };
+bool getPutCall(char *putOrCall, PutCall &type, string &errorMessage);
+
 /*======================================================================================
 returnXloper
 
@@ -32,10 +35,19 @@ xloper* returnXloper(vector<T> outputVector)
 /*======================================================================================
 returnXloperOnError
 
-Converts a string (normally containing an error message) and turns it into an *xloper
-so it can be returned to excel
+Converts a string (normally containing an error message) to an *xloper so it can be 
+returned to excel
 =======================================================================================*/
 xloper* returnXloperOnError(string errorMessage);
+
+/*======================================================================================
+returnXloper
+
+Converts a double (normally the correct answer from a function) to an *xloper so it 
+can be returned to excel
+=======================================================================================*/
+xloper* returnXloper(double returnValue);
+
 
 /*======================================================================================
 constructVector

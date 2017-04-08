@@ -1,5 +1,29 @@
 #include "xllFunctionSupport.h"
 
+#include <boost\algorithm\string.hpp>
+
+
+bool getPutCall(char *putOrCall, PutCall &type, string &errorMessage)
+{
+	string optionType(putOrCall);
+	boost::to_lower(optionType);
+	if ((optionType.compare("c") == 0) || (optionType.compare("call") == 0))
+	{
+		type = CALL;
+	}
+	else if ((optionType.compare("p") == 0) || (optionType.compare("put") == 0))
+	{
+		type = PUT;
+	}
+	else 
+	{
+		errorMessage = "Option type must be either (P)ut or (C)all";
+		return false;
+	}
+	return true;
+}
+
+
 /*======================================================================================
 returnXloperOnError
 
@@ -9,6 +33,17 @@ xloper* returnXloperOnError(string errorMessage)
     cpp_xloper outputMatrix(1, 1);
     outputMatrix.SetArrayElement(0, 0, (char*)errorMessage.c_str());
     return outputMatrix.ExtractXloper(false);
+}
+
+/*======================================================================================
+returnXloper
+
+=======================================================================================*/
+xloper* returnXloper(double returnValue)
+{
+	cpp_xloper outputMatrix(1, 1);
+	outputMatrix.SetArrayElement(0, 0, returnValue);
+	return outputMatrix.ExtractXloper(false);
 }
 
 /*======================================================================================

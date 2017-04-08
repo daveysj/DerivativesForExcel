@@ -4,7 +4,7 @@ using namespace XLLBasicLibrary;
 #include <memory> // shared_ptr
 #include <boost/algorithm/string.hpp> // to_lower
 
-xloper* __stdcall xllInterpolate(
+xloper* __stdcall Interpolate(
     double xValue,
     xl_array *xArray,
     xl_array *yArray,
@@ -12,61 +12,63 @@ xloper* __stdcall xllInterpolate(
     char* interpolatorType,
     bool extrapolate)
 {
-    shared_ptr<ArrayInterpolator> interpolator;
-
-    vector<double> xVector, yVector;
-    string errorMessage;
-    if (!constructVector(xArray, xVector, errorMessage))
-    {
-        return returnXloperOnError(errorMessage);
-    }
-    if (!constructVector(yArray, yVector, errorMessage))
-    {
-        return returnXloperOnError(errorMessage);
-    }
-    if (xVector.size() != yVector.size())
-    {
-        return returnXloperOnError("input vectors do not have the same size");
-    }
-    if ((int) xVector.size() < arrayInputSize)
-    {
-        return returnXloperOnError("input vectors are smaller than their size input");
-    }
-	xVector.resize(arrayInputSize);
-	yVector.resize(arrayInputSize);
-    string type = string(interpolatorType);
-    boost::to_lower(type);
-    if (type.compare("") == 0 || type.compare("linear") == 0)
-    {
-        interpolator = shared_ptr<ArrayInterpolator>(
-            new  LinearArrayInterpolator(xVector, yVector, extrapolate));
-    }
-    else if (type.compare("cubic") == 0)
-    {
-        interpolator = shared_ptr<ArrayInterpolator>(
-            new  CubicSplineInterpolator(xVector, yVector, extrapolate));
-
-    }
-    else
-    {
-        return returnXloperOnError("Type must be either linear or cubic");
-    }
-	if (!interpolator->isOk())
+	try
 	{
-		return returnXloperOnError(interpolator->getErrorMessage());
+		shared_ptr<ArrayInterpolator> interpolator;
+		vector<double> xVector, yVector;
+		string errorMessage;
+		if (!constructVector(xArray, xVector, errorMessage))
+		{
+			return returnXloperOnError(errorMessage);
+		}
+		if (!constructVector(yArray, yVector, errorMessage))
+		{
+			return returnXloperOnError(errorMessage);
+		}
+		if (xVector.size() != yVector.size())
+		{
+			return returnXloperOnError("X and Y input arrays have inconsistent dimension");
+		}
+		if ((int) xVector.size() < arrayInputSize)
+		{
+			return returnXloperOnError("\"Size\" input is greater than the lenght of the X and Y arrays");
+		}
+		xVector.resize(arrayInputSize);
+		yVector.resize(arrayInputSize);
+		string type = string(interpolatorType);
+		boost::to_lower(type);
+		if (type.compare("") == 0 || type.compare("linear") == 0)
+		{
+			interpolator = shared_ptr<ArrayInterpolator>(
+				new  LinearArrayInterpolator(xVector, yVector, extrapolate));
+		}
+		else if (type.compare("cubic") == 0)
+		{
+			interpolator = shared_ptr<ArrayInterpolator>(
+				new  CubicSplineInterpolator(xVector, yVector, extrapolate));
+		}
+		else
+		{
+			return returnXloperOnError("\"Type\" must be either \"Linear\" or \"Cubic\"");
+		}
+		if (!interpolator->isOk())
+		{
+			return returnXloperOnError(interpolator->getErrorMessage());
+		}
+		return returnXloper(interpolator->getRate(xValue));
 	}
-
-    cpp_xloper outputMatrix(1, 1);
-    outputMatrix.SetArrayElement(0, 0, interpolator->getRate(xValue));
-    return outputMatrix.ExtractXloper(false);
+	catch (exception &e)
+	{
+		return returnXloperOnError(e.what());
+	}
 }
 
-xloper* __stdcall xllBlackVolOffSurface(
+xloper* __stdcall BlackVolOffSurface(
 	char* optionType,
 	double forward,
 	double strike,
-	double time,
-	xl_array *timeArray,
+	double day,
+	xl_array *dayArray,
 	xl_array *putDeltaArray,
 	xl_array *surface,
 	double convergenceThreshold,
@@ -76,39 +78,54 @@ xloper* __stdcall xllBlackVolOffSurface(
 	try
 	{
 		string errorMessage = "";
-		if ((forward < 1e-14) || (strike < 1e-14) || (time < 1e-14))
+		if ((forward < 1e-14) || (strike < 1e-14) || (day < 1e-14))
 		{
 			return returnXloperOnError("Numeric inputs must be strictly positive");
 		}
-		vector<double> timeVector;
-		if (!constructVector(timeArray, timeVector, errorMessage))
+		PutCall putCallType;
+		if (!getPutCall(optionType, putCallType, errorMessage))
 		{
 			return returnXloperOnError(errorMessage);
 		}
+
+		vector<double> timeVector;
+		if (!constructVector(dayArray, timeVector, errorMessage))
+		{
+			return returnXloperOnError(errorMessage);
+		}
+		// Hard coded explicit assumption that the time input uses days but everything in
+		// the code uses year fractions. The following lines convert days into year fractions
 		double yearFraction = 1 / 365.0;
-		transform(timeVector.begin(), timeVector.end(), timeVector.begin(), bind1st(multiplies<double>(), yearFraction));
+		transform(
+			timeVector.begin(),
+			timeVector.end(),
+			timeVector.begin(),
+			bind1st(multiplies<double>(), yearFraction));
+		// The SimpleDeltaSurface class assumes the surface data is input with the time
+		// in the x-dimenstion and delta in the y-dimension. If the inputs do not conform
+		// then the surface needs to be transposed before it can be used
+		WORD timeArray_rows, timeArray_columns;
+		cpp_xloper timeXloper(dayArray);
+		timeXloper.GetArraySize(timeArray_rows, timeArray_columns);
+		bool transpose = false;
+		if (timeArray_columns == 1 && timeArray_rows > 1)
+		{
+			transpose = true;
+		}
 
 		vector<double> deltaVector;
 		if (!constructVector(putDeltaArray, deltaVector, errorMessage))
 		{
 			return returnXloperOnError(errorMessage);
 		}
-		// Check if the input array needs to be transposed or not
-		WORD timeArray_rows, timeArray_columns;
-		cpp_xloper timeXloper(timeArray);
-		timeXloper.GetArraySize(timeArray_rows, timeArray_columns);
-		bool transpose = false;
-		if (timeArray_columns == 1 && timeArray_rows > 1)
-		{
-			transpose = true; 
-		}
+
 		vector<vector<double>> surfaceData;
 		if (!extractDataFromSurface(surface, transpose, surfaceData, errorMessage))
 		{
 			return returnXloperOnError(errorMessage);
 		}
 
-		if (string(type).compare("") == 0)
+		if (std::string(type).compare("") == 0)
 		{
 			type = "bilinear";
 		}
@@ -116,15 +133,13 @@ xloper* __stdcall xllBlackVolOffSurface(
 		SimpleDeltaSurface deltaSurface(timeVector, deltaVector, surfaceData, true, type);
 
 		double moneyness = (strike - forward) / forward;
-		if (!deltaSurface.isInMoneynessRange(time * yearFraction, moneyness))
+		if (!deltaSurface.isInMoneynessRange(day * yearFraction, moneyness))
 		{
 			return returnXloperOnError("Point to interpolate is outside of the surface range and extrapolation is set to false");
 		}
 
-		double vol = deltaSurface.getVolatilityForMoneyness(time * yearFraction, moneyness);
-		cpp_xloper outputObject(1, 1);
-		outputObject.SetArrayElement(0, 0, vol);
-		return outputObject.ExtractXloper(false);
+		double vol = deltaSurface.getVolatilityForMoneyness(day * yearFraction, moneyness);
+		return returnXloper(vol);
 	}
 	catch (exception &e)
 	{
@@ -132,7 +147,7 @@ xloper* __stdcall xllBlackVolOffSurface(
 	}
 }
 
-xloper* __stdcall xllBlack(
+xloper* __stdcall Black(
     char* putOrCall,
     double forward,
     double strike,
@@ -140,44 +155,52 @@ xloper* __stdcall xllBlack(
     double standardDeviation,
     double discountFactor)
 {
-	if ((forward < 1e-14) || (strike < 1e-14) || (standardDeviation < 1e-14) || (discountFactor < 1e-14))
+	try
 	{
-		return returnXloperOnError("All numeric inputs to this function must be strictly positive");
+		if ((forward < 1e-14) || (strike < 1e-14) || (standardDeviation < 1e-14) || (discountFactor < 1e-14))
+		{
+			return returnXloperOnError("All numeric inputs to this function must be strictly positive");
+		}
+		PutCall putCallType;
+		string errorMessage;
+		if (!getPutCall(putOrCall, putCallType, errorMessage))
+		{
+			return returnXloperOnError(errorMessage);
+		}
+
+		shared_ptr<Black76Option> option;
+		string putOrCallString = string(putOrCall);
+		boost::to_lower(putOrCallString);
+		if (putCallType == CALL)
+		{
+			option = shared_ptr<Black76Call>(new
+				Black76Call(forward, strike, standardDeviation, discountFactor));
+		}
+		else // (putCallType == PUT)
+		{
+			option = shared_ptr<Black76Put>(new
+				Black76Put(forward, strike, standardDeviation, discountFactor));
+		}
+
+		double optionPremium;
+		if (standardDeviation < 1e-14)
+		{
+			optionPremium = option->getPremiumAfterMaturity(forward, discountFactor);
+		}
+		else
+		{
+			optionPremium = option->getPremium();
+		}
+		return returnXloper(optionPremium);
+	}
+	catch (exception &e)
+	{
+		return returnXloperOnError(e.what());
 	}
 
-	shared_ptr<Black76Option> option;
-	string putOrCallString = string(putOrCall);
-	boost::to_lower(putOrCallString);
-	if (putOrCallString.compare("c") == 0 || putOrCallString.compare("call") == 0)
-	{
-		option = shared_ptr<Black76Call>(new
-			Black76Call(forward, strike, standardDeviation, discountFactor));
-	}
-	else if (putOrCallString.compare("p") == 0|| putOrCallString.compare("put") == 0)
-	{
-		option = shared_ptr<Black76Put>(new
-			Black76Put(forward, strike, standardDeviation, discountFactor));
-	}
-	else
-	{
-		return returnXloperOnError("Option type must be either (P)ut or (C)all");
-	}
-	double optionPremium;
-	if (standardDeviation < 1e-14)
-	{
-		optionPremium = option->getPremiumAfterMaturity(forward, discountFactor);
-	}
-	else
-	{
-		optionPremium = option->getPremium();
-	}
-
-	cpp_xloper outputObject(1, 1);
-	outputObject.SetArrayElement(0, 0, optionPremium);
-	return outputObject.ExtractXloper(false);
 }
 
-xloper* __stdcall xllBlackDelta(
+xloper* __stdcall BlackDelta(
     char* putOrCall,
     double forward,
     double strike,
@@ -185,38 +208,43 @@ xloper* __stdcall xllBlackDelta(
     double standardDeviation,
     double discountFactor)
 {
-	if ((forward < 1e-14) || (strike < 1e-14) || (standardDeviation < 1e-14) || (discountFactor < 1e-14))
+	try
 	{
-		return returnXloperOnError("All numeric inputs to this function must be strictly positive");
-	}
+		if ((forward < 1e-14) || (strike < 1e-14) || (standardDeviation < 1e-14) || (discountFactor < 1e-14))
+		{
+			return returnXloperOnError("All numeric inputs to this function must be strictly positive");
+		}
 
-	shared_ptr<Black76Option> option;
-	string putOrCallString = string(putOrCall);
-	boost::to_lower(putOrCallString);
-	if (putOrCallString.compare("c") == 0 || putOrCallString.compare("call") == 0)
-	{
-		option = shared_ptr<Black76Call>(new
-			Black76Call(forward, strike, standardDeviation, discountFactor));
+		shared_ptr<Black76Option> option;
+		string putOrCallString = string(putOrCall);
+		boost::to_lower(putOrCallString);
+		if (putOrCallString.compare("c") == 0 || putOrCallString.compare("call") == 0)
+		{
+			option = shared_ptr<Black76Call>(new
+				Black76Call(forward, strike, standardDeviation, discountFactor));
+		}
+		else if (putOrCallString.compare("p") == 0 || putOrCallString.compare("put") == 0)
+		{
+			option = shared_ptr<Black76Put>(new
+				Black76Put(forward, strike, standardDeviation, discountFactor));
+		}
+		else
+		{
+			return returnXloperOnError("Option type must be either (P)ut or (C)all");
+		}
+		double optionDelta;
+		if (standardDeviation < 1e-14)
+		{
+			return returnXloperOnError("Option past maturity");
+		}
+		else
+		{
+			optionDelta = option->getDelta();
+		}
+		return returnXloper(optionDelta);
 	}
-	else if (putOrCallString.compare("p") == 0 || putOrCallString.compare("put") == 0)
+	catch (exception &e)
 	{
-		option = shared_ptr<Black76Put>(new
-			Black76Put(forward, strike, standardDeviation, discountFactor));
+		return returnXloperOnError(e.what());
 	}
-	else
-	{
-		return returnXloperOnError("Option type must be either (P)ut or (C)all");
-	}
-	double optionDelta;
-	if (standardDeviation < 1e-14)
-	{
-		return returnXloperOnError("Option past maturity");
-	}
-	else
-	{
-		optionDelta = option->getDelta();
-	}
-	cpp_xloper outputObject(1, 1);
-	outputObject.SetArrayElement(0, 0, optionDelta);
-	return outputObject.ExtractXloper(false);
 }
